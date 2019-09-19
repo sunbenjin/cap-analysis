@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.capinfo.mapper.CapItemRequirementMapper">
+    <resultMap id="BaseResultMap" type="com.capinfo.entity.CapItemRequirement">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="item_title" jdbcType="VARCHAR" property="itemTitle"/>
+        <result column="begin_date" jdbcType="TIMESTAMP" property="beginDate"/>
+        <result column="item_launch_type" jdbcType="INTEGER" property="itemLaunchType"/>
+        <result column="end_date" jdbcType="TIMESTAMP" property="endDate"/>
+        <result column="item_description" jdbcType="VARCHAR" property="itemDescription" />
+        <result column="item_area" jdbcType="VARCHAR" property="itemArea"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+
+    <select id="selectListByPage" parameterType="com.capinfo.entity.CapItemRequirement" resultMap="BaseResultMap">
+        SELECT
+        distinct a.*
+        from cap_item_requirement a  left join cap_item_task b on a.id = b.item_requirement_id and b.del_flag=0
+        left join cap_task_person c on a.id = c.item_requirement_id and c.del_flag=0
+        left join cap_check_book d on d.item_requirement_id = a.id and d.del_flag=0
+        <where>
+        1=1
+            <if test="itemTitle!=null and itemTitle!=''">and a.item_title like '%${itemTitle}%'</if>
+            <if test="remarks!=null and remarks!=''">and a.remarks like '%${remarks}%'</if>
+            <if test="itemFlag!=null and itemFlag !=''">
+            <choose>
+                <!-- 已完成项目-->
+                <when test="itemFlag=='1'.toString()">
+                   and<![CDATA[   DATE_FORMAT(d.check_date, '%Y-%m-%d')<=  DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 1 DAY), '%Y-%m-%d') ]]>
+                </when>
+                <!--未完成项目 -->
+                <when test="itemFlag=='0'.toString()">
+                    and<![CDATA[   DATE_FORMAT(a.end_date, '%Y-%m-%d')>=  DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 0 DAY), '%Y-%m-%d') ]]>
+                </when>
+            </choose>
+            </if>
+            <if test="itemLaunchType != null ">and type = #{item_launch_type,jdbcType=INTEGER}</if>
+            <if test="delFlag != null ">and a.del_flag = #{delFlag,jdbcType=INTEGER}</if>
+            <if test="itemArea != null and itemArea != ''">and a.item_area = #{itemArea,jdbcType=VARCHAR}</if>
+            <if test="checkPerson != null and checkPerson != ''">and c.person_id = #{checkPerson,jdbcType=VARCHAR}</if>
+        </where>
+        order by create_date desc
+    </select>
+</mapper>

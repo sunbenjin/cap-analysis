@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.capinfo.mapper.CapItemTaskMapper">
+    <resultMap id="BaseResultMap" type="com.capinfo.entity.CapItemTask">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="item_requirement_id" jdbcType="VARCHAR" property="itemRequirementId"/>
+        <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
+        <result column="task_check_table_name" jdbcType="VARCHAR" property="taskCheckTableName"/>
+        <result column="task_type" jdbcType="INTEGER" property="taskType"/>
+        <result column="task_area" jdbcType="VARCHAR" property="taskArea" />
+        <result column="task_start_time" jdbcType="TIMESTAMP" property="taskStartTime"/>
+        <result column="task_end_time" jdbcType="TIMESTAMP" property="taskEndTime" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    </resultMap>
+
+    <select id="selectListByPage" parameterType="com.capinfo.entity.CapItemTask" resultMap="BaseResultMap">
+        SELECT distinct  a.*
+        from cap_item_task a left join cap_task_person b on a.id = b.item_task_id and b.del_flag=0
+        left  join  cap_check_book c on c.item_task_id = a.id and c.del_flag= 0
+        <where>
+       and 1=1
+            <if test="delFlag != null ">and a.del_flag = #{delFlag,jdbcType=INTEGER}</if>
+            <if test="taskName!=null and taskName!=''">and a.task_name like '%${taskName}%'</if>
+            <if test="remarks!=null and remarks!=''">and a.remarks like '%${remarks}%'</if>
+            <if test="taskFlag !=null and taskFlag !=''">
+                <choose>
+                    <!--未完成任务 -->
+                    <when test="taskFlag =='0'.toString()">
+                        and<![CDATA[   DATE_FORMAT(a.task_end_time, '%Y-%m-%d')>=  DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 0 DAY), '%Y-%m-%d') ]]>
+                    </when>
+                    <!-- 已完成任务 -->
+                    <when test="taskFlag =='1'.toString()">
+                        and<![CDATA[   DATE_FORMAT(c.check_date, '%Y-%m-%d')<=  DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 1 DAY), '%Y-%m-%d') ]]>
+                    </when>
+                </choose>
+            </if>
+            <if test="taskStartTime != null ">and<![CDATA[   DATE_FORMAT(a.task_start_time, '%Y-%m-%d')>=  DATE_FORMAT(#{taskStartTime}, '%Y-%m-%d') ]]></if>
+            <if test="taskEndTime != null ">and<![CDATA[   DATE_FORMAT(a.task_end_time, '%Y-%m-%d')<=  DATE_FORMAT(#{taskEndTime}, '%Y-%m-%d') ]]></if>
+            <if test="taskType != null ">and a.task_type = #{taskType,jdbcType=INTEGER}</if>
+            <if test="itemRequirementId != null and itemRequirementId != ''">and a.item_requirement_id = #{itemRequirementId,jdbcType=VARCHAR}</if>
+            <if test="taskPersons != null and taskPersons != ''">and b.person_id = #{taskPersons,jdbcType=VARCHAR}</if>
+        </where>
+        order by a.create_date desc
+    </select>
+</mapper>

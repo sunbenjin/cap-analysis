@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.capinfo.mapper.CapCheckBookMapper">
+    <resultMap id="BaseResultMap" type="com.capinfo.entity.CapCheckBook">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="item_task_id" jdbcType="VARCHAR" property="itemTaskId"/>
+        <result column="item_requirement_id" jdbcType="VARCHAR" property="itemRequirementId"/>
+        <result column="check_date" jdbcType="TIMESTAMP" property="checkDate" />
+        <result column="check_type" jdbcType="INTEGER" property="checkType"/>
+        <result column="check_problem_type" jdbcType="INTEGER" property="checkProblemType"/>
+        <result column="check_index" jdbcType="INTEGER" property="checkIndex"/>
+        <result column="check_content" jdbcType="INTEGER" property="checkContent"/>
+        <result column="duty_unit" jdbcType="VARCHAR" property="dutyUnit" />
+        <result column="duty_avenue" jdbcType="VARCHAR" property="dutyAvenue" />
+        <result column="point_location" jdbcType="VARCHAR" property="pointLocation" />
+        <result column="problem_description" jdbcType="VARCHAR" property="problemDescription" />
+        <result column="check_person" jdbcType="VARCHAR" property="checkPerson" />
+        <result column="longitude" jdbcType="VARCHAR" property="longitude" />
+        <result column="latitude" jdbcType="VARCHAR" property="latitude" />
+        <result column="remarks" jdbcType="VARCHAR" property="remarks" />
+        <result column="remarks1" jdbcType="VARCHAR" property="remarks1" />
+        <result column="remarks2" jdbcType="VARCHAR" property="remarks2" />
+        <result column="problem_address" jdbcType="VARCHAR" property="problemAddress" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+        <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+
+    </resultMap>
+
+    <select id="selectListByPage" parameterType="com.capinfo.entity.CapCheckBook" resultMap="BaseResultMap">
+        SELECT a.*,
+        (select b.name from sys_dict_item b where a.check_problem_type is not null and a.check_problem_type !=''and b.id = a.check_problem_type ) as 'checkProblemTypeText',
+        (select b.name from sys_dict_item b where a.check_index is not null and a.check_index !=''and b.id = a.check_index ) as 'checkIndexText',
+        (select b.name from sys_dict_item b where a.check_content is not null and a.check_content !=''and b.id = a.check_content ) as 'checkContentText'
+        from cap_check_book a
+        <where>
+        1=1
+            <if test="checkType!=null and checkType!=''">and check_type = #{checkType,jdbcType=INTEGER}</if>
+            <if test="checkProblemType!=null and checkProblemType!=''">and check_problem_type = #{checkProblemType,jdbcType=INTEGER}</if>
+            <if test="checkIndex!=null and checkIndex!=''">and check_index = #{checkIndex,jdbcType=INTEGER}</if>
+            <if test="checkContent!=null and checkContent!=''">and check_content = #{checkContent,jdbcType=INTEGER}</if>
+            <if test="dutyUnit != null and dutyUnit != ''">and duty_unit = #{dutyUnit,jdbcType=VARCHAR}</if>
+            <if test="dutyAvenue != null and dutyAvenue != ''">and duty_avenue = #{dutyAvenue,jdbcType=VARCHAR}</if>
+            <if test="delFlag != null ">and del_flag = #{delFlag,jdbcType=INTEGER}</if>
+            <if test="beginDate != null ">and<![CDATA[   DATE_FORMAT(check_date, '%Y-%m-%d')>=  DATE_FORMAT(#{beginDate}, '%Y-%m-%d') ]]></if>
+            <if test="endDate != null ">and<![CDATA[   DATE_FORMAT(check_date, '%Y-%m-%d')<=  DATE_FORMAT(#{endDate}, '%Y-%m-%d') ]]></if>
+            <if test="itemTaskId != null and itemTaskId != ''">and item_task_id = #{itemTaskId,jdbcType=VARCHAR}</if>
+            <if test="checkPerson != null and checkPerson != ''">and check_person = #{checkPerson,jdbcType=VARCHAR}</if>
+            <if test="itemRequirementId != null and itemRequirementId != ''">and item_requirement_id = #{itemRequirementId,jdbcType=VARCHAR}</if>
+        </where>
+        order by create_date desc
+    </select>
+</mapper>
