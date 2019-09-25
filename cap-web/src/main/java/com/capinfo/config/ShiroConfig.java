@@ -118,7 +118,7 @@ public class ShiroConfig {
         sfb.setSecurityManager(securityManager);
         sfb.setLoginUrl("/login");
         sfb.setUnauthorizedUrl("/goLogin");
-        Map<String, Filter> filters = new HashMap<>();
+        Map<String, Filter> filters = new LinkedHashMap<>();
         filters.put("per", getPermissionFilter());
         filters.put("verCode", getVerfityCodeFilter());
         filters.put("appAuthc",getAppAuthenticationFilter());
@@ -126,11 +126,11 @@ public class ShiroConfig {
         Map<String, String> filterMap = new LinkedHashMap<>();
 //        filterMap.put("/**","anon");
         filterMap.put("/login", "verCode,anon");
+
         filterMap.put("/api/user/login","verCode,anon");
-        //http://localhost/wx
-//        filterMap.put("/oauth2/**", "oauth2");
-//        filterMap.put("/wx/**", "anon");
+
         filterMap.put("/api/**","appAuthc");
+        filterMap.put("/down/downApp","anon");
         //filterMap.put("/login","anon");
         filterMap.put("/getCode", "anon");
         filterMap.put("/blog/**", "anon");

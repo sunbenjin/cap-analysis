@@ -318,7 +318,7 @@
         if (h == null || h == '') {
             h = ($(window).height() - 50);
         }
-     /*   layer.open({
+        layer.open({
             id: 'item-update',
             type: 2,
             area: [w + 'px', h + 'px'],
@@ -328,8 +328,8 @@
             shade: 0.4,
             title: title,
             content: url + '&detail=false'
-        });*/
-        window.location.href=url+"&detail=false";
+        });
+       // window.location.href=url+"&detail=false";
 
     }
 

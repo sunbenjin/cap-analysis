@@ -135,6 +135,11 @@ public class CapCheckBook implements Serializable {
     @Transient
     private String picLocation;
 
+    @Transient
+    private String firstPicUrl;
+
+    @Transient
+    private String checkFlag;
 
     public String getCheckDateText() {
         if(checkDate !=null){

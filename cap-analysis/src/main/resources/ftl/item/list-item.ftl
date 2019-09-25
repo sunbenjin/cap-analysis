@@ -185,7 +185,7 @@
                 });
             },
             add: function () {
-                add('添加项目需求', 'addItem', 800, 400);
+                add('添加项目需求', 'addItem', 800, 600);
             },
             update: function () {
                 var checkStatus = table.checkStatus('itemRequirementList')
@@ -194,7 +194,7 @@
                     layer.msg('请选择一行编辑', {icon: 5});
                     return false;
                 }
-                update('编辑角色', 'editItemRequirement?id=' + data[0].id, 800, 400);
+                update('编辑角色', 'editItemRequirement?id=' + data[0].id, 800, 600);
             },
             detail: function () {
                 var checkStatus = table.checkStatus('itemRequirementList')
@@ -204,7 +204,7 @@
                     layer.msg('请选择一行查看', {icon: 5});
                     return false;
                 }
-                detail('查看需求信息', 'updateItemDetail?id=' + data[0].id, 800, 400);
+                detail('查看需求信息', 'updateItemDetail?id=' + data[0].id, 800, 600);
             }
         };
 
@@ -219,18 +219,18 @@
             var data = obj.data;
             if (obj.event === 'detail') {
 
-                detail('查看项目需求', 'updateItemDetail?id=' + data.id, 800, 400);
+                detail('查看项目需求', 'updateItemDetail?id=' + data.id, 800, 600);
             } else if (obj.event === 'del') {
                 layer.confirm('确定删除?', function(){
                     del(data.id);
                 });
             } else if (obj.event === 'edit') {
-                update('编辑项目需求', 'updateItemDetail?id=' + data.id, 800, 400);
+                update('编辑项目需求', 'updateItemDetail?id=' + data.id, 800, 600);
             }else if(obj.event === 'detailTaskList'){
 
                 detailTaskList("/capItemTask/showItemTask?itemRequirementId="+data.id);
             }else if(obj.event==='addTask'){
-                addTask('添加任务','/capItemTask/addTask?itemRequirementId='+data.id,800,400);
+                addTask('添加任务','/capItemTask/addTask?itemRequirementId='+data.id,800,600);
             }
         });
 

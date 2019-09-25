@@ -70,9 +70,11 @@ logging:
 
 dataType: mysql
 
-upload-path:  http://1.0.7.115:8900/enclosure/fileInput/api/updateFile
+upload-path: http://1.0.7.115:8900/enclosure/fileInput/api/updateFile
 
-image-path:  http://1.0.7.115:8900/enclosure/fileInput/api/findByBusiIdAndUniqueCode
+image-path: http://1.0.7.115:8900/enclosure/fileInput/api/findByBusiIdAndUniqueCode
+
+file-server: http://1.0.7.115:8900
 
 uploader:
   basePath: C:\\tourism\\tourismfileService\\

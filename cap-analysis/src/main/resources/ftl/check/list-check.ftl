@@ -10,8 +10,7 @@
     <link rel="stylesheet" href="${re.contextPath}/plugin/layui/css/layui.css">
     <link rel="stylesheet" href="${re.contextPath}/plugin/lenos/main.css">
     <script type="text/javascript" src="${re.contextPath}/plugin/jquery/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${re.contextPath}/plugin/layui/layui.all.js"
-            charset="utf-8"></script>
+    <script type="text/javascript" src="${re.contextPath}/plugin/layui/layui.all.js" charset="utf-8"></script>
 </head>
 
 <body>
@@ -161,9 +160,14 @@
                     {checkbox: true, fixed: true, width: '5%'}
                     , {field: 'dutyAvenue', title: '所在镇街', width: '20%', sort: true}
                     , {field: 'checkDate', title: '巡查时间', width: '15%',templet: '<div>{{ layui.laytpl.toDateString(d.checkDate,"yyyy-MM-dd HH:mm:ss") }}</div>',sort: true}
-
+                    <#if '${checkType}'=='1'|| '${checkType}'=='2'>
                     , {field: 'checkProblemType', title: '问题1', width: '15%',templet: '<div>{{layui.laytpl.changeValueToText(d.checkProblemType)}}</div>',sort: true}
                     , {field: 'checkIndex', title: '问题2',templet:'<div>{{layui.laytpl.changeValueToText(d.checkIndex)}}</div>', width: '25%',sort: true}
+                    </#if>
+                    <#if '${checkType}'=='3'>
+                    , {field: 'problemDescription', title: '问题1', width: '15%',sort: true}
+                    , {field: 'problemAddress', title: '问题2', width: '25%',sort: true}
+                    </#if>
                     , {field: 'remark', title: '操作', width: '20%', toolbar: "#toolBar"}
                 ]]
                 , page: true
@@ -251,15 +255,13 @@
             var data = obj.data;
             if (obj.event === 'detail') {
 
-                detail('查看项目需求', 'updateTaskDetail?id=' + data.id, 800, 600);
+                detail('检查详情', 'showCheckDetail?id=' + data.id, 800, 600);
             } else if (obj.event === 'del') {
                 layer.confirm('确定删除?', function(){
                     del(data.id);
                 });
             } else if (obj.event === 'edit') {
                 update('编辑项目需求', 'updateTaskDetail?id=' + data.id, 800, 600);
-            }else if(obj.event === 'detailCheck'){
-                detailCheck("/")
             }
         });
 
@@ -391,9 +393,9 @@
             content: url
         });
     }
-    function exportExcel() {
+    /*function exportExcel() {
         alert(123);
-    }
+    }*/
 </script>
 </body>
 

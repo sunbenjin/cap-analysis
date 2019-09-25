@@ -4,17 +4,23 @@ import com.capinfo.base.CurrentRole;
 import com.capinfo.base.CurrentUser;
 import com.capinfo.core.shiro.ShiroUtil;
 import com.capinfo.entity.CapCheckBook;
+import com.capinfo.entity.FileUrlEntity;
 import com.capinfo.entity.SysDictItem;
 import com.capinfo.entity.SysRole;
 import com.capinfo.exception.MyException;
 import com.capinfo.service.CapCheckBookService;
 import com.capinfo.service.DictItemService;
+import com.capinfo.util.BeanUtil;
 import com.capinfo.util.CommonUtil;
 import com.capinfo.util.ReType;
 import com.capinfo.utils.FileinputUtils;
+import com.capinfo.utils.HttpUtils;
+import com.capinfo.utils.ResponseEntity;
 import com.capinfo.utils.SysConstants;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +41,10 @@ import java.util.*;
 public class CapCheckBookApiController {
     @Value("${upload-path}")
     private  String uploadPath;
+    @Value("${image-path}")
+    private  String imagePath;
+    @Value("${file-server}")
+    private  String fileServer;
     @Autowired
     private CapCheckBookService checkBookService;
     @Autowired
@@ -45,6 +55,7 @@ public class CapCheckBookApiController {
     @ResponseBody
     public ReType getCheckList(CapCheckBook capCheckBook,String page,String limit){
         List<CapCheckBook> tList = null;
+        List<CapCheckBook> pageList = new ArrayList<>();
         Page<CapCheckBook> tPage = PageHelper.startPage(Integer.valueOf(page),Integer.valueOf(limit));
         try {
             CurrentUser currentUser = (CurrentUser)ShiroUtil.getSession().getAttribute("curentUser");
@@ -57,11 +68,26 @@ public class CapCheckBookApiController {
                       capCheckBook.setDelFlag(0);
                       tList = checkBookService.selectListByPage(capCheckBook);
                   }
+                  if(!CollectionUtils.isEmpty(tList)){
+                      for(CapCheckBook checkBook : tList){
+                          String bookJson = HttpUtils.doGet(imagePath+"?busiId="+checkBook.getId()+"&fileUniqueCode=check_book_pic","utf-8");
+                          GsonBuilder bookBuilder = new GsonBuilder();
+                          Gson bookGson = bookBuilder.create();
+                          ResponseEntity bookResponseEntity = bookGson.fromJson(bookJson,ResponseEntity.class);
+                          if(bookResponseEntity!=null){
+                              List<FileUrlEntity> bookFileUrlEntities = bookResponseEntity.getData();
+                              if(!CollectionUtils.isEmpty(bookFileUrlEntities)){
+                                  checkBook.setFirstPicUrl(fileServer+"/image/"+bookFileUrlEntities.get(0).getFileUrl());
+                              }
+                          }
+                          pageList.add(checkBook);
+                      }
+                  }
               }else{
                 return ReType.fail("请先登陆系统");
             }
 
-            return new ReType(tPage.getTotal(),tList);
+            return new ReType(tPage.getTotal(),pageList);
         }catch (MyException e){
             e.printStackTrace();
             return ReType.fail("获取检查列表异常");
@@ -92,12 +118,12 @@ public class CapCheckBookApiController {
                 locationPic.put("filesDynCode",dyCode);
                 locationPic.put("busiId",capCheckBook.getId());
                 locationPic.put("fileUniqueCode","check_location_pic");
-                locationPic.put("longitude",capCheckBook.getLatitude());
+                locationPic.put("longitude",capCheckBook.getLongitude());
                 locationPic.put("latitude",capCheckBook.getLatitude());
-                locationPic.put("address",capCheckBook.getPointLocation());
-                checkPic.put("longitude",capCheckBook.getLatitude());
+                locationPic.put("address",capCheckBook.getProblemAddress());
+                checkPic.put("longitude",capCheckBook.getLongitude());
                 checkPic.put("latitude",capCheckBook.getLatitude());
-                checkPic.put("address",capCheckBook.getPointLocation());
+                checkPic.put("address",capCheckBook.getProblemAddress());
                 FileinputUtils.updateFiles(checkPic,uploadPath);
                 FileinputUtils.updateFiles(locationPic,uploadPath);
             }
@@ -174,10 +200,11 @@ public class CapCheckBookApiController {
             if(oldCheckBook==null){
                 return ReType.fail("修改检查信息异常");
             }
-            capCheckBook.setUpdateBy(currentUser.getId());
-            capCheckBook.setUpdateDate(new Date());
+            BeanUtil.copyNotNullBean(capCheckBook,oldCheckBook);
+            oldCheckBook.setUpdateBy(currentUser.getId());
+            oldCheckBook.setUpdateDate(new Date());
 
-            checkBookService.updateByPrimaryKeySelective(capCheckBook);
+            checkBookService.updateByPrimaryKey(oldCheckBook);
             Map<String,String> checkPic = new HashMap<>();
             Map<String,String> locationPic = new HashMap<>();
             String dyCode = capCheckBook.getDynCode();
@@ -188,12 +215,12 @@ public class CapCheckBookApiController {
                 locationPic.put("filesDynCode",dyCode);
                 locationPic.put("busiId",capCheckBook.getId());
                 locationPic.put("fileUniqueCode","check_location_pic");
-                locationPic.put("longitude",capCheckBook.getLatitude());
+                locationPic.put("longitude",capCheckBook.getLongitude());
                 locationPic.put("latitude",capCheckBook.getLatitude());
-                locationPic.put("address",capCheckBook.getPointLocation());
-                checkPic.put("longitude",capCheckBook.getLatitude());
+                locationPic.put("address",capCheckBook.getProblemAddress());
+                checkPic.put("longitude",capCheckBook.getLongitude());
                 checkPic.put("latitude",capCheckBook.getLatitude());
-                checkPic.put("address",capCheckBook.getPointLocation());
+                checkPic.put("address",capCheckBook.getProblemAddress());
                 FileinputUtils.updateFiles(checkPic,uploadPath);
                 FileinputUtils.updateFiles(locationPic,uploadPath);
             }

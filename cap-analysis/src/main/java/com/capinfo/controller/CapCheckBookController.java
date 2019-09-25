@@ -52,6 +52,10 @@ public class CapCheckBookController {
 
     @Value("${image-path}")
     private String imagePath;
+
+    @Value("${file-server}")
+    private String fileServer;
+
     @GetMapping("showTaskList")
     public String itemTaskList(Model model){
         return "check/list-task-check";
@@ -185,6 +189,7 @@ public class CapCheckBookController {
                         File file = new File(basePath+fileUrlEntity.getFileUrl());
                         if(file.exists()){
                             byte[] bytes = ImageUtils.getImageBytes(file);
+                            map.put("flag9","1");
                             map.put("image9",bytes);
                         }else{
                             map.put("flag"+9,"0");
@@ -225,11 +230,6 @@ public class CapCheckBookController {
                     dataList.add(map);
 
                 }
-                //excelBean.put("dataList",dataList);
-               /*context.putVar("dataList",dataList);*/
-
-
-
             }else{
                 Map<String,Object> map = new HashMap<>();
                 CapCheckBook checkBook = new CapCheckBook();
@@ -246,8 +246,6 @@ public class CapCheckBookController {
                 for(int k=0; k<9;k++){
                     map.put("flag"+k,"0");
                 }
-
-
             }
             context.putVar("dataList",dataList);
             String path = request.getSession().getServletContext().getRealPath("/")+title+"台账.xlsx";
@@ -274,6 +272,21 @@ public class CapCheckBookController {
                     break;
             }
         }
+    }
+    @GetMapping("showCheckDetail")
+    public String checkDetail(String id, Model model, boolean detail) {
+        if (StringUtils.isNotEmpty(id)) {
+            CapCheckBook capCheckBook = checkBookService.selectByPrimaryKey(id);
+            if(capCheckBook!=null){
+                setCheckBookText(capCheckBook,capCheckBook.getCheckProblemType() ,"checkProblemType");
+                setCheckBookText(capCheckBook,capCheckBook.getCheckContent() ,"checkContent");
+                setCheckBookText(capCheckBook,capCheckBook.getCheckIndex() ,"checkIndex");
+            }
 
+            model.addAttribute("checkBook",capCheckBook);
+            model.addAttribute("fileServer",fileServer);
+        }
+        model.addAttribute("detail", detail+"");
+        return "/check/check-detail";
     }
 }

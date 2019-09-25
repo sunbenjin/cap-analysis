@@ -49,7 +49,9 @@ To change this excel_template use File | Settings | File Templates.-->
       width: 200px !important;
 
     }*/
-
+  .layui-laydate{
+    height: 50px;
+  }
   </style>
 
 </head>
