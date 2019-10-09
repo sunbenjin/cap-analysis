@@ -1,5 +1,6 @@
 package com.capinfo.controller;
 
+import com.capinfo.base.CurrentUser;
 import com.capinfo.core.shiro.ShiroUtil;
 import com.capinfo.entity.*;
 import com.capinfo.exception.MyException;
@@ -12,6 +13,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.jxls.common.Context;
@@ -21,10 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,19 +140,18 @@ public class CapCheckBookController {
      public void exportExcel(CapCheckBook capCheckBook, HttpServletResponse response,HttpServletRequest request){
         try {
             capCheckBook.setDelFlag(0);
-
             InputStream inputStream = null;
             List<CapCheckBook> list = checkBookService.selectListByPage(capCheckBook);
             String checkType = capCheckBook.getCheckType();
             String title = "";
 
-            if(StringUtils.equals("1",checkType)){
+            if(StringUtils.equals("1",checkType)||StringUtils.equals("4",checkType)){
                 title  = "创城检查";
                 inputStream =   this.getClass().getResourceAsStream("/excel_template/ccjc_template.xlsx");
-            }else if(StringUtils.equals("2",checkType)){
+            }else if(StringUtils.equals("2",checkType)||StringUtils.equals("5",checkType)){
                 title = "环境检查";
                 inputStream = this.getClass().getResourceAsStream("/excel_template/hjjc_template.xlsx");
-            }else if(StringUtils.equals("3",checkType)){
+            }else if(StringUtils.equals("3",checkType)||StringUtils.equals("6",checkType)){
                 title = "自由巡检";
                 inputStream = this.getClass().getResourceAsStream("/excel_template/zyxj_template.xlsx");
             }
@@ -288,5 +286,31 @@ public class CapCheckBookController {
         }
         model.addAttribute("detail", detail+"");
         return "/check/check-detail";
+    }
+
+    @PostMapping(value = "deleteCheck")
+    @ResponseBody
+    public ReType deleteCheck(CapCheckBook capCheckBook){
+        CurrentUser currentUser = (CurrentUser)ShiroUtil.getSession().getAttribute("curentUser");
+        try {
+
+            if(StringUtils.isEmpty(capCheckBook.getId())){
+                return ReType.fail("删除检查信息异常");
+            }
+            CapCheckBook oldCheckBook = checkBookService.selectByPrimaryKey(capCheckBook.getId());
+            if(oldCheckBook==null){
+                return ReType.fail("删除检查信息异常");
+            }
+            capCheckBook.setUpdateDate(new Date());
+            capCheckBook.setUpdateBy(currentUser.getId());
+            capCheckBook.setDelFlag(1);
+
+            checkBookService.updateByPrimaryKeySelective(capCheckBook);
+            return ReType.build(1,"删除检查信息成功");
+
+        }catch (MyException e){
+            return ReType.fail("保存检查异常");
+        }
+
     }
 }

@@ -78,7 +78,7 @@ To change this excel_template use File | Settings | File Templates.-->
                        autocomplete="off"></input>
             </div>
         </div>
-        <#if '${checkBook.checkType}'=='1'>
+        <#if '${checkBook.checkType}'=='1'|| '${checkBook.checkType}'=='4'>
             <div class="layui-form-item">
 
                 <label for="checkProblemTypeText" class="layui-form-label">
@@ -177,7 +177,7 @@ To change this excel_template use File | Settings | File Templates.-->
             </div>
         </#if>
 
-        <#if '${checkBook.checkType}'=='2'>
+        <#if '${checkBook.checkType}'=='2'|| '${checkBook.checkType}'=='5'>
             <div class="layui-form-item">
 
                 <label for="checkProblemTypeText" class="layui-form-label">
@@ -275,7 +275,7 @@ To change this excel_template use File | Settings | File Templates.-->
                 </div>
             </div>
         </#if>
-        <#if '${checkBook.checkType}'=='3'>
+        <#if '${checkBook.checkType}'=='3' || '${checkBook.checkType}'=='6'>
 
             <div class="layui-form-item">
 
@@ -459,7 +459,7 @@ To change this excel_template use File | Settings | File Templates.-->
         $('#close').click(function () {
             var index = parent.layer.getFrameIndex(window.name);
             parent.layer.close(index);
-
+            return false;
         });
         //监听提交
         form.on('submit(user)', function (data) {

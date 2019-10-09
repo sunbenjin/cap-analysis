@@ -43,6 +43,17 @@ To change this excel_template use File | Settings | File Templates.-->
       </div>
     </div>
     <div class="layui-form-item" pane>
+      <label for="itemDict" class="layui-form-label">
+        检查字典：
+      </label>
+      <div class="layui-input-block">
+        <select name="itemDict" lay-verify="required" id="itemDict" lay-search lay-filter="itemDict">
+
+        </select>
+      </div>
+
+    </div>
+    <div class="layui-form-item" pane>
       <label for="taskType" class="layui-form-label">
         任务类型：
       </label>
@@ -176,7 +187,18 @@ To change this excel_template use File | Settings | File Templates.-->
       parent.layer.close(index);
       return false;
     });
+    layui.use('laytpl',function(){
+      var laytpl = layui.laytpl;
+      getTaskDict(laytpl,'${itemTask.itemDict}');
+    });
+    form.on('select(itemDict)',function (data) {
+      var itemDict = data.value;
+      layui.use('laytpl',function(){
+        var laytpl = layui.laytpl;
+        getTaskDict(laytpl,itemDict);
+      });
 
+    });
     //监听提交
     form.on('submit(user)', function(data){
       var taskPersonsChecked = [];
@@ -192,6 +214,46 @@ To change this excel_template use File | Settings | File Templates.-->
 
       return false;
     });
+    function getTaskDict(laytpl,itemDict){
+      // var itemIndex = $("#itemDict").val();
+      //alert(itemDict);
+      $.ajax({
+        url:"/dict/getDict",
+        data:{
+          "type":"task_type",
+          "parentId":itemDict
+        },
+        dataType:"json",
+        type:"get",
+        async:false,
+        success:function(res){
+          if(res.code=='1'){
+            $("select[name='taskType']").empty();
+            var html = "<option value=''>请选择</option>";
+            //console.log(res.object);
+            var taskTypeValue = '${itemTask.taskType}';
+            $(res.object).each(function (v, k) {
+
+              if(taskTypeValue==k.value){
+                html += "<option value='" + k.value + "' selected='selected'>" + k.label + "</option>";
+              }else{
+                html += "<option value='" + k.value + "'>" + k.label + "</option>";
+              }
+
+            });
+            //把遍历的数据放到select表里面
+            $("select[name='taskType']").append(html);
+            //从新刷新了一下下拉框
+            form.render('select');
+          }
+        },
+        error:function (e) {
+          layer.msg("服务器异常！");
+        }
+
+      });
+      // return list;
+    }
   });
 
 </script>
@@ -250,7 +312,7 @@ To change this excel_template use File | Settings | File Templates.-->
     })
   }
 </script>
-<script type="text/html" id="taskTypeTpl">
+<script type="text/html" id="itemDictTpl">
   <option value=""></option>
   {{#layui.each(d.list,function(index,item){ }}
 
@@ -265,26 +327,27 @@ To change this excel_template use File | Settings | File Templates.-->
 <script>
   layui.use('laytpl',function(){
     var laytpl = layui.laytpl;
-    getTaskDict(laytpl);
+    getItemIndexDict(laytpl);
     //console.log(data);
     //var data = {'title':'获取消息成功',"list":[{'value':'1','name':'创城检查'},{'value':'2','name':'环境检查'},{'value':'3','name':'自由检查'}]};
 
   });
-  function getTaskDict(laytpl){
+  function getItemIndexDict(laytpl){
 
     $.ajax({
       url:"/dict/getDict",
       data:{
-        "type":"task_type"
+        "type":"item_index"
       },
       dataType:"json",
       type:"get",
       async:false,
       success:function(res){
-       // console.log(res);
+        // console.log(res);
+        //  alert(123);
         if(res.code=='1'){
           //let  array = res.object;
-         // var data =  getTaskDict();
+          // var data =  getTaskDict();
           var data = {};
           var list = [];
           data.msg = res.msg;
@@ -296,12 +359,12 @@ To change this excel_template use File | Settings | File Templates.-->
           }
           data.list = list;
           //console.log(data);
-          var getTpl = document.getElementById('taskTypeTpl').innerHTML;
-          var view = document.getElementById('taskType');
+          var getTpl = document.getElementById('itemDictTpl').innerHTML;
+          var view = document.getElementById('itemDict');
           laytpl(getTpl).render(data,function(html){
             view.innerHTML = html;
-            var taskTypeValue = '${itemTask.taskType}';
-            var selectArray = document.getElementById('taskType');
+            var taskTypeValue = '${itemTask.itemDict}';
+            var selectArray = document.getElementById('itemDict');
             var options = selectArray.options;
             /*console.log(selectArray);*/
             for(var i=0; i<options.length; i++){
@@ -317,7 +380,19 @@ To change this excel_template use File | Settings | File Templates.-->
       }
 
     });
-   // return list;
+    // return list;
   }
+</script>
+<script type="text/html" id="taskTypeTpl">
+  <option value=""></option>
+  {{#layui.each(d.list,function(index,item){ }}
+
+
+  <option  value="{{item.value}}"  >{{item.label}}</option>
+
+  {{# }); }}
+  {{# if(d.list.length==0){ }}
+  无数据
+  {{# }}}
 </script>
 </html>

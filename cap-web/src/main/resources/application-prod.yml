@@ -1,60 +1,80 @@
 server:
-  port: 8088
+  port: 8899
 spring:
+  devtools:
+    restart:
+      enabled: true
   datasource:
-        url: jdbc:mysql://localhost:3306/capinfo1111?useUnicode=true&characterEncoding=UTF-8
-        username: root
-#        password: 123456
-#        password: 1234
-        password: root
-        # 使用druid数据源
-        type: com.alibaba.druid.pool.DruidDataSource
-        driver-class-name: com.mysql.jdbc.Driver
-        filters: stat
-        maxActive: 20
-        initialSize: 1
-        maxWait: 60000
-        minIdle: 1
-        timeBetweenEvictionRunsMillis: 60000
-        minEvictableIdleTimeMillis: 300000
-        validationQuery: select 'x'
-        testWhileIdle: true
-        testOnBorrow: false
-        testOnReturn: false
-        poolPreparedStatements: true
-        maxOpenPreparedStatements: 20
+    url: jdbc:mysql://127.0.0.1:3306/lenos?useUnicode=true&characterEncoding=UTF-8
+    username: root
+    password: root
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
   http:
-      encoding:
-        force: true
+    encoding:
+      force: true
   boot:
     admin:
       client:
         prefer-ip: true
-      url: http://localhost:8082
+      url: http://localhost:80821
+#  activemq:
+#    broker-url: tcp://localhost:61616
+#    packages:
+#      trust-all: true
 
 mybatis:
-    type-aliases-package: com.capinfo.entity
-    mapper-locations: classpath*:mapper/*.xml
-    check-config-location: true
+  type-aliases-package: com.capinfo.entity
+  mapper-locations: classpath*:mapper/*.xml
+  check-config-location: true
 
 mapper:
-    mappers:
-        - com.capinfo.base.BaseMapper
-    not-empty: false
-    identity: MYSQL
+  mappers:
+    - com.capinfo.base.BaseMapper
+    - tk.mybatis.mapper.common.Mapper
+  not-empty: true
+  identity: mysql
 
 
 # PageHelperConfig 可以替代此方案
 pagehelper:
-    helperDialect: mysql
-    reasonable: true
-    supportMethodsArguments: true
-    params: count=countSql
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+capsp:
+  uploadPath: ./file/
+  isDayType: false
+
+  imagePath: ./image/
+
 logging:
+  file: ./logs/capsp-log.log
   level:
-      com.capinfo.mapper: debug
-  config: classpath:log4j2.yml
+    com.capinfo.mapper: debug
 
-filePath: ./file/
+dataType: mysql
 
-imagePath: ./image/
+upload-path: http://39.97.230.101:8900/enclosure/fileInput/api/updateFile
+
+image-path: http://39.97.230.101:8900/enclosure/fileInput/api/findByBusiIdAndUniqueCode
+
+file-server: http://39.97.230.101:8900
+
+uploader:
+  basePath: C:\\tourism\\tourismfileService\\

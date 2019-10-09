@@ -67,6 +67,8 @@ public class CapItemTask {
     @Column(name = "task_state")
     private Integer taskState;
 
+    @Column(name = "item_dict")
+    private String itemDict;
     /**
      * 1已完成任务
      * 0未完成任务

@@ -50,4 +50,13 @@ public class SysDictItem implements Serializable {
 
     @Column(name = "del_flag")
     private Integer delFlag;
+
+    @Column(name = "item_dict")
+    private String itemDict;
+
+    @Column(name = "level")
+    private String level;
+
+    @Column(name = "next_node")
+    private String nextNode;
 }

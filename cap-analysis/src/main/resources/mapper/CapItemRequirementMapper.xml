@@ -9,6 +9,7 @@
         <result column="item_title" jdbcType="VARCHAR" property="itemTitle"/>
         <result column="begin_date" jdbcType="TIMESTAMP" property="beginDate"/>
         <result column="item_launch_type" jdbcType="INTEGER" property="itemLaunchType"/>
+        <result column="item_dict" jdbcType="VARCHAR" property="itemDict"/>
         <result column="end_date" jdbcType="TIMESTAMP" property="endDate"/>
         <result column="item_description" jdbcType="VARCHAR" property="itemDescription" />
         <result column="item_area" jdbcType="VARCHAR" property="itemArea"/>
@@ -46,6 +47,7 @@
             <if test="delFlag != null ">and a.del_flag = #{delFlag,jdbcType=INTEGER}</if>
             <if test="itemArea != null and itemArea != ''">and a.item_area = #{itemArea,jdbcType=VARCHAR}</if>
             <if test="checkPerson != null and checkPerson != ''">and c.person_id = #{checkPerson,jdbcType=VARCHAR}</if>
+            <if test="itemDict !=null and itemDict !=''">and a.item_dict = #{itemDict,jdbcType=VARCHAR}</if>
         </where>
         order by create_date desc
     </select>

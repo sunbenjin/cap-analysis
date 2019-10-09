@@ -45,6 +45,17 @@ To change this excel_template use File | Settings | File Templates.-->
       </div>
     </div>
     <div class="layui-form-item" pane>
+      <label for="itemDict" class="layui-form-label">
+        检查字典：
+      </label>
+      <div class="layui-input-block">
+        <select name="itemDict" lay-verify="required" id="itemDict" lay-search lay-filter="itemDict">
+
+        </select>
+      </div>
+
+    </div>
+    <div class="layui-form-item" pane>
       <label for="taskType" class="layui-form-label">
         任务类型：
       </label>
@@ -55,6 +66,7 @@ To change this excel_template use File | Settings | File Templates.-->
       </div>
 
     </div>
+
     <div class="layui-form-item" pane>
       <label for="taskPersons" class="layui-form-label">
         执行人员：
@@ -187,29 +199,57 @@ To change this excel_template use File | Settings | File Templates.-->
       postAjaxre('saveTask', data.field, 'itemTaskList');
       return false;
     });
-    $("#addInputIndex").click(function () {
-      layer.open({
-        title: '个性指标'
-        ,content: '<input type="text" name="手动输入" placeholder="手动填写" class="layui-input"/>' //这里content是一个普通的String
-        ,btn:['确认','取消']
 
-      });
-      return false;
-    });
-    $("#addSelectIndex").click(function () {
-      var html = "<select class='layui-select' style='width:100%'><option value=''>请选择</option><option value='1'>个性指标1</option><option value='2'>个性指标2</option><option value='3'>个性指标3</option><option value='4'>个性指标4</option><option value='5'>个性指标5</option><option value='6'>个性指标6</option></select>"
-      layer.open({
-        title: '个性指标'
-        ,content: html//这里content是一个普通的String
-        ,btn:['确认','取消']
-      });
-      return false;
-    });
+/*$("#itemDict").change(function () {
+      var itemDict = $("#itemDict").val();
+      alert(itemDict);
+    });*/
     $('#close').click(function () {
       var index = parent.layer.getFrameIndex(window.name);
       parent.layer.close(index);
       return false;
     });
+   //chanageTaskType();
+    form.on('select(itemDict)',function (data) {
+      var itemDict = data.value;
+      layui.use('laytpl',function(){
+        var laytpl = layui.laytpl;
+        getTaskDict(laytpl,itemDict);
+      });
+      function getTaskDict(laytpl,itemDict){
+       // var itemIndex = $("#itemDict").val();
+        //alert(itemDict);
+        $.ajax({
+          url:"/dict/getDict",
+          data:{
+            "type":"task_type",
+            "parentId":itemDict
+          },
+          dataType:"json",
+          type:"get",
+          async:false,
+          success:function(res){
+             if(res.code=='1'){
+              $("select[name='taskType']").empty();
+              var html = "<option value=''>请选择</option>";
+              console.log(res.object);
+              $(res.object).each(function (v, k) {
+                html += "<option value='" + k.value + "'>" + k.label + "</option>";
+              });
+              //把遍历的数据放到select表里面
+              $("select[name='taskType']").append(html);
+              //从新刷新了一下下拉框
+              form.render('select');
+            }
+          },
+          error:function (e) {
+            layer.msg("服务器异常！");
+          }
+
+        });
+        // return list;
+      }
+    })
   });
 
 </script>
@@ -254,7 +294,7 @@ To change this excel_template use File | Settings | File Templates.-->
           var taskPersons = '${itemTask.taskPersons}';
           console.log(taskPersons);
           var checkArray = document.getElementsByName('taskPersons');
-          console.log(checkArray);
+          //console.log(checkArray);
           checkArray.forEach(function(item){
             if(taskPersons.indexOf(item.defaultValue)>=0){
               item.checked=true;
@@ -268,7 +308,7 @@ To change this excel_template use File | Settings | File Templates.-->
     })
   }
 </script>
-<script type="text/html" id="taskTypeTpl">
+<script type="text/html" id="itemDictTpl">
   <option value=""></option>
   {{#layui.each(d.list,function(index,item){ }}
 
@@ -283,23 +323,24 @@ To change this excel_template use File | Settings | File Templates.-->
 <script>
   layui.use('laytpl',function(){
     var laytpl = layui.laytpl;
-    getTaskDict(laytpl);
+    getItemIndexDict(laytpl);
     //console.log(data);
     //var data = {'title':'获取消息成功',"list":[{'value':'1','name':'创城检查'},{'value':'2','name':'环境检查'},{'value':'3','name':'自由检查'}]};
 
   });
-  function getTaskDict(laytpl){
+  function getItemIndexDict(laytpl){
 
     $.ajax({
       url:"/dict/getDict",
       data:{
-        "type":"task_type"
+        "type":"item_index"
       },
       dataType:"json",
       type:"get",
       async:false,
       success:function(res){
         // console.log(res);
+      //  alert(123);
         if(res.code=='1'){
           //let  array = res.object;
           // var data =  getTaskDict();
@@ -314,12 +355,12 @@ To change this excel_template use File | Settings | File Templates.-->
           }
           data.list = list;
           //console.log(data);
-          var getTpl = document.getElementById('taskTypeTpl').innerHTML;
-          var view = document.getElementById('taskType');
+          var getTpl = document.getElementById('itemDictTpl').innerHTML;
+          var view = document.getElementById('itemDict');
           laytpl(getTpl).render(data,function(html){
             view.innerHTML = html;
-            var taskTypeValue = '${itemTask.taskType}';
-            var selectArray = document.getElementById('taskType');
+            var taskTypeValue = '${itemTask.itemDict}';
+            var selectArray = document.getElementById('itemDict');
             var options = selectArray.options;
             /*console.log(selectArray);*/
             for(var i=0; i<options.length; i++){
@@ -338,4 +379,17 @@ To change this excel_template use File | Settings | File Templates.-->
     // return list;
   }
 </script>
+<script type="text/html" id="taskTypeTpl">
+  <option value=""></option>
+  {{#layui.each(d.list,function(index,item){ }}
+
+
+  <option  value="{{item.value}}"  >{{item.label}}</option>
+
+  {{# }); }}
+  {{# if(d.list.length==0){ }}
+  无数据
+  {{# }}}
+</script>
+
 </html>

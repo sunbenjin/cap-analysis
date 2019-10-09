@@ -58,11 +58,17 @@
         switch (dictValue) {
             case '1':
                 itemText='创城检查';
+            case '4':
+                itemText='创城检查';
             break;
             case '2':
                 itemText='环境检查';
+            case '5':
+                itemText='环境检查';
                 break;
             case '3':
+                itemText='自由检查';
+            case '6':
                 itemText='自由检查';
                 break;
         }

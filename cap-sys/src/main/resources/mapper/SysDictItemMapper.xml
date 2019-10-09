@@ -16,6 +16,9 @@
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
     <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
     <result column="del_flag" jdbcType="INTEGER" property="delFlag" />
+    <result column="item_dict" jdbcType="VARCHAR" property="itemDict" />
+    <result column="level" jdbcType="VARCHAR" property="level" />
+    <result column="next_node" jdbcType="VARCHAR" property="nextNode" />
   </resultMap>
 
   <select id="selectListByPage" parameterType="com.capinfo.entity.SysDictItem" resultMap="BaseResultMap">
@@ -26,6 +29,9 @@
       <if test="id!=null and id!=''"> and id =#{id}</if>
       <if test="parentId!=null and parentId!=''"> and parent_id =#{parentId}</if>
       <if test="delFlag!=null and delFlag!=''"> and del_flag =#{delFlag}</if>
+      <if test="itemDict!=null and itemDict!=''"> and item_dict =#{itemDict}</if>
+      <if test="level!=null and level!=''"> and level =#{level}</if>
+      <if test="nextNode!=null and nextNode!=''"> and next_node =#{nextNode}</if>
     </where>
   </select>
 </mapper>

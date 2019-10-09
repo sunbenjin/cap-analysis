@@ -7,6 +7,7 @@
         -->
         <id column="id" jdbcType="VARCHAR" property="id" />
         <result column="item_requirement_id" jdbcType="VARCHAR" property="itemRequirementId"/>
+        <result column="item_dict" jdbcType="VARCHAR" property="itemDict"/>
         <result column="task_name" jdbcType="VARCHAR" property="taskName"/>
         <result column="task_check_table_name" jdbcType="VARCHAR" property="taskCheckTableName"/>
         <result column="task_type" jdbcType="INTEGER" property="taskType"/>
@@ -47,6 +48,7 @@
             <if test="taskType != null ">and a.task_type = #{taskType,jdbcType=INTEGER}</if>
             <if test="itemRequirementId != null and itemRequirementId != ''">and a.item_requirement_id = #{itemRequirementId,jdbcType=VARCHAR}</if>
             <if test="taskPersons != null and taskPersons != ''">and b.person_id = #{taskPersons,jdbcType=VARCHAR}</if>
+            <if test="itemDict !=null and itemDict !=''">and a.item_dict = #{itemDict,jdbcType=VARCHAR}</if>
         </where>
         order by a.create_date desc
     </select>

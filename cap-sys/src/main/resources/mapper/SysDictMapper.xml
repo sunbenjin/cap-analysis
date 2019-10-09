@@ -25,12 +25,12 @@
     from sys_dict
     <where>
     1=1
-      <if test="id!=null and id!=''"> and id =#{id}</if>
-      <if test="parentId!=null and parentId!=''"> and parent_id =#{parentId}</if>
-      <if test="type!=null and type!=''"> and type =#{type}</if>
-      <if test="value!=null and value!=''"> and value =#{value}</if>
-      <if test="label!=null and label!=''"> and label =#{label}</if>
-      <if test="delFlag!=null and delFlag!=''"> and del_flag =#{delFlag}</if>
+      <if test="id!=null and id!=''"> and id =#{id,jdbcType=VARCHAR}</if>
+      <if test="parentId!=null and parentId!=''"> and parent_id =#{parentId,jdbcType=VARCHAR}</if>
+      <if test="type!=null and type!=''"> and type like concat('%',#{type,jdbcType=VARCHAR},'%')</if>
+      <if test="value!=null and value!=''"> and value =#{value,jdbcType=VARCHAR}</if>
+      <if test="label!=null and label!=''"> and label =#{label,jdbcType=VARCHAR}</if>
+      <if test="delFlag!=null"> and del_flag =#{delFlag,jdbcType=INTEGER}</if>
     </where>
   </select>
 </mapper>

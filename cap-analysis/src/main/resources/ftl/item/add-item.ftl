@@ -193,7 +193,7 @@ To change this excel_template use File | Settings | File Templates.-->
     $('#close').click(function () {
       var index = parent.layer.getFrameIndex(window.name);
       parent.layer.close(index);
-
+      return false;
     });
     //监听提交
     form.on('submit(user)', function (data) {

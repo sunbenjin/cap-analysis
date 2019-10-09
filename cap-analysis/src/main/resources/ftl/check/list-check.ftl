@@ -49,10 +49,10 @@
     </@shiro.hasPermission>
 <#-- <@shiro.hasPermission name="check:edit">
   <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="edit">编辑</a>
-</@shiro.hasPermission>
+</@shiro.hasPermission>-->
   <@shiro.hasPermission name="check:delete">
       <a class="layui-btn layui-btn-xs  layui-btn-normal" lay-event="del">删除</a>
-  </@shiro.hasPermission>-->
+  </@shiro.hasPermission>
 
 </script>
 
@@ -93,34 +93,37 @@
     };
     layui.laytpl.changeValueToText= function(parentId){
         let text = "";
-        $.ajax({
-            url:"/dictItem/getDictItem",
-            dataType:'json',
-            data:{
-                "parentId":parentId
-            },
-            async:false,
-            type:'get',
-            success:function (res) {
-               if(res.code=='1'){
-                   var obj = res.object;
-                   console.log(obj);
-                   text = obj.name;
-                  /* if(obj.length>0){
-                       text = obj[0].label;
+        if(parentId){
+            $.ajax({
+                url:"/dictItem/getDictItem",
+                dataType:'json',
+                data:{
+                    "parentId":parentId
+                },
+                async:false,
+                type:'get',
+                success:function (res) {
+                    if(res.code=='1'){
+                        var obj = res.object;
+                        //  console.log(obj);
+                        text = obj.name;
+                        /* if(obj.length>0){
+                             text = obj[0].label;
 
-                   }else{
-                       console.log(obj[0]);
-                   }*/
+                         }else{
+                             console.log(obj[0]);
+                         }*/
 
-               }else{
-                   layer.msg("获取字典值失败");
-               }
-            },
-            error:function (e) {
-                layer.msg("服务器异常！");
-            }
-        });
+                    }else{
+                        layer.msg("获取字典值失败");
+                    }
+                },
+                error:function (e) {
+                    layer.msg("服务器异常！");
+                }
+            });
+        }
+
       //  alert(text);
         return text;
 
@@ -160,11 +163,11 @@
                     {checkbox: true, fixed: true, width: '5%'}
                     , {field: 'dutyAvenue', title: '所在镇街', width: '20%', sort: true}
                     , {field: 'checkDate', title: '巡查时间', width: '15%',templet: '<div>{{ layui.laytpl.toDateString(d.checkDate,"yyyy-MM-dd HH:mm:ss") }}</div>',sort: true}
-                    <#if '${checkType}'=='1'|| '${checkType}'=='2'>
+                    <#if '${checkType}'=='1'|| '${checkType}'=='2'||'${checkType}'=='4' ||'${checkType}'=='5'>
                     , {field: 'checkProblemType', title: '问题1', width: '15%',templet: '<div>{{layui.laytpl.changeValueToText(d.checkProblemType)}}</div>',sort: true}
                     , {field: 'checkIndex', title: '问题2',templet:'<div>{{layui.laytpl.changeValueToText(d.checkIndex)}}</div>', width: '25%',sort: true}
                     </#if>
-                    <#if '${checkType}'=='3'>
+                    <#if '${checkType}'=='3'||'${checkType}'=='6'>
                     , {field: 'problemDescription', title: '问题1', width: '15%',sort: true}
                     , {field: 'problemAddress', title: '问题2', width: '25%',sort: true}
                     </#if>
@@ -277,13 +280,13 @@
     });
     function del(id) {
         $.ajax({
-            url: "deleteItemTask",
+            url: "deleteCheck",
             type: "post",
             data: {id: id},
             success: function (d) {
-                if(d.msg){
+                if(d.code=='1'){
                     layer.msg(d.msg,{icon:6,offset: 'rb',area:['120px','80px'],anim:2});
-                    layui.table.reload('itemTaskList');
+                    layui.table.reload('listCheckList');
                 }else{
                     layer.msg(d.msg,{icon:5,offset: 'rb',area:['120px','80px'],anim:2});
                 }

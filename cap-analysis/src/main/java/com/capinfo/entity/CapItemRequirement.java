@@ -55,6 +55,10 @@ public class CapItemRequirement {
     @Column(name = "del_flag")
     private Integer delFlag;
 
+    @Column(name = "item_dict")
+    private String itemDict;
+
+
     @Transient
     private String checkPerson;
     /**
